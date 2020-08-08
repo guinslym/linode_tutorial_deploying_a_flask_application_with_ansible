@@ -1,0 +1,207 @@
+---
+- hosts: flaskbox_dev
+  remote_user: root
+  become: true
+  vars:
+    mysql_root_password: "Password1"
+    host: "{{ inventory_hostname }}"
+    project_path: "/flask_app_project"
+
+  tasks:
+    - name: Test Connection
+      ping:
+    - name: System details
+      when: ansible_distribution == 'Ubuntu' and  ansible_distribution_version == "20.04"
+      debug: msg="{{ item }}"
+      with_items: 
+      - "{{ ansible_distribution }}"
+      - "{{ ansible_distribution_version }}"
+      - "{{ ansible_distribution_major_version }}"
+      - "{{ ansible_distribution_release  }}"
+
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - block:
+      - name: Install base packages
+        package:
+          name: "{{ packages }}"
+          state: present
+        vars:
+          packages:
+            - curl
+            - git
+            - gunicorn
+            - vim
+            - tree
+            - supervisor
+            - unzip
+            - wget
+            - python3
+            - python3-dev
+            - python3-pip
+            - python3-venv
+            - python3-setuptools
+        when: ansible_pkg_mgr == 'apt'
+
+    - name: Remove dependencies that are no longer kequired
+      apt:
+        autoremove: yes
+        purge: yes
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: copy files to server
+      copy: 
+        src: "{{ item }}"
+        dest: /
+      loop:
+        - ./flask_app_project
+
+    - name: copy Flask config file
+      copy: 
+        src: ./config.json
+        dest: /etc/config.json
+
+    - name: Python3 dependencies
+      pip:
+        requirements: /flask_app_project/flask_app/requirements.txt
+
+    - name: ensure nginx is at the latest version
+      apt: 
+        name: nginx 
+        state: latest
+      
+    - name: start nginx
+      service:
+          name: nginx
+          state: started
+
+    - name: copy NGINX conf file
+      copy: 
+        src: ./flask_app_nginx
+        dest: /etc/nginx/sites-enabled/flask_app_nginx
+      notify:
+          - restart nginx
+
+
+    - name: "Disable the NGINX’s default configuration file by removing its symlink"
+      file:
+        path: "/etc/nginx/sites-enabled/default"
+        state: absent
+
+    - name: Create locales
+      locale_gen:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - en_US.UTF-8
+        - fr_FR.UTF-8
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Set timezone to America/Toronto
+      timezone:
+        name: America/Toronto
+
+    - name: write gunicorn service script
+      template:
+          src=./gunicorn.service.j2
+          dest=/etc/systemd/system/gunicorn.service
+
+
+    - name: GUNICORN | Enable service
+      command: "systemctl enable gunicorn"
+      become: yes
+      become_method: sudo
+
+    - name: Enable gunicorn service
+      systemd:
+        name: "gunicorn.service"
+        daemon_reload: true
+        enabled: true
+        state: "started"
+      become: true
+      notify:
+          - restart gunicorn
+
+    - name: ensure nginx is at the latest version
+      apt:
+        name: nginx 
+        state: latest
+      notify:
+          - restart nginx
+
+
+    - name: Copy supervisor file on remote host
+      template:
+          src=./flask_app.conf.j2
+          dest=/etc/supervisor/conf.d/flask_app.conf
+      notify:
+          - restart supervisor
+
+
+    - name: Create Folder flask_app for supervisord
+      file: 
+        path: /var/log/flask_app
+        owner: root 
+        group: root 
+        mode: 0755 
+        state: directory
+
+    - name: Touch again flask_app.out.log, but dont change times this makes the task idempotent
+      file:
+        path: /var/log/flask_app/flask_app.out.log
+        state: touch
+        mode: 0644
+        owner: root
+        group: root
+        modification_time: preserve
+        access_time: preserve
+      register: p
+      changed_when: >
+        p.diff.before.state == "absent" or
+        p.diff.before.mode|default("0644") != "0644" or
+        p.diff.before.owner|default(0) != 0 or
+        p.diff.before.group|default(0) != 0
+
+    - name: Touch again flask_app.err.log, but dont change times this makes the task idempotent
+      file:
+        path: /var/log/flask_app/flask_app.err.log
+        state: touch
+        mode: 0644
+        owner: root
+        group: root
+        modification_time: preserve
+        access_time: preserve
+      register: p
+      changed_when: >
+        p.diff.before.state == "absent" or
+        p.diff.before.mode|default("0644") != "0644" or
+        p.diff.before.owner|default(0) != 0 or
+        p.diff.before.group|default(0) != 0
+        
+    - name: Restart Supervisorctl
+      become: true
+      service: name=supervisor state=restarted
+
+  handlers:
+    - name: restart nginx
+      service:  name=nginx state=restarted
+      
+    - name: restart supervisor
+      become: true
+      service: name=supervisor state=restarted
+
+    - name: restart gunicorn
+      systemd:
+          name=gunicorn.service
+          daemon_reload=yes
+          enabled=yes
+          state=restarted
+
+    - meta: end_play
+

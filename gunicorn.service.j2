@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn server for {{ host }}
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/flask_app_project
+Restart=on-failure
+ExecStart= /usr/bin/gunicorn --workers 3 flask_app:app
+
+[Install]
+WantedBy=multi-user.target
