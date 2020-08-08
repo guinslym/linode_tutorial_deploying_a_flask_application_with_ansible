@@ -4,7 +4,7 @@
 
 ### Description
 <p>
-  Using ansible to deply a flask application on Linode. The original tutorial is located <a href="https://www.linode.com/docs/development/python/flask-and-gunicorn-on-ubuntu/" target="_blank">here</a>
+  Using ansible to deply a flask application on Linode. The original <a href="https://www.linode.com/docs/development/python/flask-and-gunicorn-on-ubuntu/" target="_blank">tutorial is located here</a>
 </p>
 
 ## Steps
@@ -38,14 +38,14 @@ ansible_python_interpreter= /usr/bin/python3
 [flaskbox_prod]
 
 ```
-#### 5. Login to your Nanode to add the ECDSA key fingerprint on your host (laptop/machine)
+#### 5. Try to login to your Nanode to add the ECDSA key fingerprint on your host (laptop/machine)
 ```shell 
 $ ssh root@???.???.?.??
 The authenticity of host '???.???.?.?? (???.???.?.??)' can't be established.
 ECDSA key fingerprint is SHA256:cKRKaNMOcD7yuT6lOoqrte8oNmDuczXM47mcgmFPAFg.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 ```
-once logged in exit the remote host
+once logged in, exit the remote host
 ```shell 
 root@localhost:~# exit
 ```
