@@ -19,6 +19,8 @@
 pip install ansible
 ```
 ## Screenshots
+  1. a
+  2. b
 <p float="left">
     <img src="images/screenshot.png" width="700"/>
 </p>
