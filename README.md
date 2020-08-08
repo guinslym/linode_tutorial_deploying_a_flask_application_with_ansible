@@ -26,7 +26,9 @@ git clone git@github.com:guinslym/linode_tutorial_deploying_a_flask_application_
 <p>
  Add your Nanode IP address in the `inventory` file to replace all **???** and add your Nanode **password** into this file. For security reasons it's better to use ansible-vault for password. But for this tutorial we can use leave it blank. **For production servers*** please use ansible-vault.
 </p>
+
 ```shell 
+
 [all:vars]
 ansible_python_interpreter= /usr/bin/python3
 
@@ -34,6 +36,7 @@ ansible_python_interpreter= /usr/bin/python3
 ???.??.???.?? ansible_ssh_user=root ansible_ssh_pass=myPasswrd2
 
 [flaskbox_prod]
+
 ```
 #### 5. Login to your Nanode to add the ECDSA key fingerprint on your host (laptop/machine)
 ```shell 
