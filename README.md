@@ -18,9 +18,12 @@
 ```shell 
 pip install ansible
 ```
-## Screenshots
-  1. a
-  2. b
+#### Screenshots
+  1. Choose Ubuntu 20.04 LTS
+  2. Choose your preferred Region
+  3. Choose Nanode or Linode
+  4. Choose a password for this tutorial
+  5. I would suggest that you add a ssh key. That will ease the login to the Remote Host (see point 5)
 <p float="left">
     <img src="images/screenshot.png" width="700"/>
 </p>
