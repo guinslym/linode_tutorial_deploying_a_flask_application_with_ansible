@@ -18,6 +18,11 @@
 ```shell 
 pip install ansible
 ```
+## Screenshots
+<p float="left">
+    <img src="images/screenshot.png" width="700"/>
+</p>
+
 #### 3. git clone this repo
 ```shell 
 git clone git@github.com:guinslym/linode_tutorial_deploying_a_flask_application_with_ansible.git
