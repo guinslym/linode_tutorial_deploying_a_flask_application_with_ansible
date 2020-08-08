@@ -30,7 +30,6 @@ git clone git@github.com:guinslym/linode_tutorial_deploying_a_flask_application_
 [all:vars]
 ansible_python_interpreter= /usr/bin/python3
 
-## my box VMs ##
 [flaskbox_dev]
 ???.??.???.?? ansible_ssh_user=root ansible_ssh_pass=myPasswrd2
 
