@@ -65,3 +65,7 @@ root@localhost:~# exit
 ```shell 
 ansible-playbook -i inventory ubuntu20-04.yml 
 ```
+
+
+## Todos
+  1. Add virtualenv
