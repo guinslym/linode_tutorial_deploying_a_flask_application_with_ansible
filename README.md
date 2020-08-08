@@ -28,9 +28,10 @@ pip install ansible
     <img src="images/screenshot.png" width="700"/>
 </p>
 
-#### 3. git clone this repo
+#### 3. git clone this repo && change diirectory
 ```shell 
 git clone git@github.com:guinslym/linode_tutorial_deploying_a_flask_application_with_ansible.git
+cd linode_tutorial_deploying_a_flask_application_with_ansible
 ```
 #### 4. Edit the Inventory file
 <p>
