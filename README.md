@@ -13,9 +13,7 @@
 <p>
   Login on Linode and create a <a href="https://cloud.linode.com/linodes/create" target="_blank">Nanode (or Linode)</a>
 </p>
-```shell 
 
-```
 #### 2. On your host (laptop/computer) install Ansible
 ```shell 
 pip install ansible
